@@ -11,6 +11,8 @@ var mainState = {
     // Load the bird sprite
     game.load.image('bird', 'assets/bird.png'); 
     game.load.image('pipe', 'assets/pipe.png');
+        
+    //Load the jump sound    
     game.load.audio('jump', 'assets/jump.wav');    
     },
 
@@ -24,20 +26,20 @@ var mainState = {
     this.pipes = game.add.group(); // Create a group  
     this.pipes.enableBody = true;  // Add physics to the group  
     this.pipes.createMultiple(20, 'pipe'); // Create 20 pipes 
+    this.timer = game.time.events.loop(1500, this.addRowOfPipes, this);     
         
 
     // Add gravity to the bird to make it fall
     game.physics.arcade.enable(this.bird);
     this.bird.body.gravity.y = 1000;  
-    this.score = 0;  
-    this.labelScore = game.add.text(20, 20, "0", { font: "30px Arial", fill: "#ffffff" });  
 
     // Call the 'jump' function when the spacekey is hit
     var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     spaceKey.onDown.add(this.jump, this);   
-    this.timer = game.time.events.loop(1500, this.addRowOfPipes, this); 
-    this.bird.anchor.setTo(-0.2, 0.5);  
-    this.jumpSound = game.add.audio('jump');     
+    this.bird.anchor.setTo(-0.2, 0.5); 
+    this.score = 0;  
+    this.labelScore = game.add.text(20, 20, "0", { font: "30px Arial", fill: "#ffffff" });      
+    this.jumpSound = this.game.add.audio('jump');     
     },
 
     update: function() {
@@ -51,6 +53,8 @@ var mainState = {
 	
  	// Make the bird jump 
     jump: function() {  
+        if (this.bird.alive == false)  
+     return;    
     // Add a vertical velocity to the bird
     this.bird.body.velocity.y = -350;
         // Create an animation on the bird
@@ -61,8 +65,7 @@ var mainState = {
 
 // And start the animation
      animation.start();
-    if (this.bird.alive == false)  
-     return;
+
     this.jumpSound.play();      
 },
 
